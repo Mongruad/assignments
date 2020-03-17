@@ -12,7 +12,8 @@ This speeds up the tests significantly
 confirmed_cases = pd.read_csv(CONFIRMED_CASES_URL, error_bad_lines=False)
 
 
-def poland_cases_by_date(day: int, month: int, year: int = 2020) -> int:
+def poland_cases_by_date(day, month,year: int = 2020):
+#def poland_cases_by_date(day: int, month: int, year: int = 2020) -> int:
     """
     Returns confirmed infection cases for country 'Poland' given a date.
 
@@ -27,12 +28,23 @@ def poland_cases_by_date(day: int, month: int, year: int = 2020) -> int:
     :param month: Month to get the cases for as an integer indexed from 1
     :return: Number of cases on a given date as an integer
     """
+    """
+    Returns confirmed infection cases for country 'Poland' given a date.'
+    """
     
-    # Your code goes here (remove pass)
-    pass
+    if type(day)!=int or day<1:
+        raise ValueError("Day of month to get the cases for as an integer indexed from 1")
+    if type(month)!=int or month<1 or month>12:
+        raise ValueError("Month to get the cases for as an integer indexed from 1")
+    
+    result=confirmed_cases.loc[confirmed_cases["Country/Region"]=="Poland"][f"{month}/{day}/20"].values[0]
+    print(result)
+    return result
+    
 
 
-def top5_countries_by_date(day: int, month: int, year: int = 2020) -> List[str]:
+
+def top5_countries_by_date(day, month, year: int = 2020):
     """
     Returns the top 5 infected countries given a date (confirmed cases).
 
@@ -47,10 +59,21 @@ def top5_countries_by_date(day: int, month: int, year: int = 2020) -> List[str]:
     :param year: Month to get the countries for as an integer indexed from 1
     :return: A list of strings with the names of the coutires
     """
-
-    # Your code goes here (remove pass)
-    pass
-
+    if type(day)!=int or day<1:
+        raise ValueError("Day of month to get the cases for as an integer indexed from 1")
+    if type(month)!=int or month<1 or month>12:
+        raise ValueError("Month to get the cases for as an integer indexed from 1")
+    if year!=20:
+        year=20 
+    else:
+        pass
+    MyCountries=confirmed_cases[["Province/State","Country/Region",f"{month}/{day}/{year}"]].sort_values(by=f"{month}/{day}/{year}", ascending=False).head(5)    # Your code goes here (remove pass)
+    TOP5=list(MyCountries["Country/Region"])
+    return TOP5
+  
+  
+  
+  
 # Function name is wrong, read the pydoc
 def no_new_cases_count(day: int, month: int, year: int = 2020) -> int:
     """
@@ -68,6 +91,21 @@ def no_new_cases_count(day: int, month: int, year: int = 2020) -> int:
     :param year: Month to get the countries for as an integer indexed from 1
     :return: Number of countries/regions where the count has not changed in a day
     """
+    if type(day)!=int or day<1:
+        raise ValueError("Day of month to get the cases for as an integer indexed from 1")
+    if type(month)!=int or month<1 or month>12:
+        raise ValueError("Month to get the cases for as an integer indexed from 1")
     
-    # Your code goes here (remove pass)
-    pass
+    dzisiaj=date(year,month,day)
+    wczoraj=dzisiaj-datetime.timedelta(1)
+    wczoraj=wczoraj.strftime('%m/%d/%y').lstrip("0").replace("/0","/")
+    dzisiaj=dzisiaj.strftime('%m/%d/%y').lstrip("0").replace("/0","/")
+    tablica1=confirmed_cases[["Province/State","Country/Region",f"{wczoraj}",f"{dzisiaj}"]]
+    tablica2=tablica1.loc[:,f"{dzisiaj}"]-tablica1.loc[:,f"{wczoraj}"]
+    k=0
+    for i in tablica2:
+        if i>0: 
+            k=k+1
+    print(k)
+    
+    return k
